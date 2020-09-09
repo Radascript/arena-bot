@@ -22,7 +22,7 @@ function queueRouter(command, args, pinger, message) {
 
 	msg = "";
 
-	if ( command === '-join' || command === '-in' ) {
+	if ( command === '-join' || command === 'ue-join' ) {
 
 		//If someone was tagged, add them. If noone was tagged, add the person that sent the message
 		if (!args.length) {
@@ -47,7 +47,7 @@ function queueRouter(command, args, pinger, message) {
 
 
 
-	else if ( command === '-out' || command === '-remove') {
+	else if ( command === '-out' || command === '-remove' || command === 'ue-out' || command === 'ue-remove' ) {
 		if (!args.length) {
 			tag = pinger;
 		}
@@ -68,14 +68,14 @@ function queueRouter(command, args, pinger, message) {
 
 
 
-	else if (command === '-reset') {
+	else if (command === '-reset' || command === 'ue-reset') {
 		queue = [];
 		msg = "Queue is now empty!";
 	}
 
 
 
-	else if (command === '-show') {
+	else if (command === '-show' || command === 'ue-show' ) {
 		if (queue.length < 1) {
 			msg = "No one in the queue!";
 		}
@@ -84,7 +84,7 @@ function queueRouter(command, args, pinger, message) {
 		}
 	}
 
-	else if (command === '-help') {
+	else if (command === '-help' || command === 'ue-help' ) {
 		msg = msg + "Queue Bot Commands:"+"\n";
 		msg = msg + "!que-join or !que-join @user to add a user to the queue"+"\n";
 		msg = msg + "!que-out or !que-out @user to remove a user from the queue"+"\n";
@@ -93,6 +93,50 @@ function queueRouter(command, args, pinger, message) {
 		msg = msg + "!que-help to show commands";
 	}
 
+	else if ( command === '-up' || command === 'ue-up' || command === '-down' || command === 'ue-down' ) {
+		if (!args.length) {
+			tag = pinger;
+		}
+		else {
+			tag = message.mentions.users.first().tag;
+		}
+
+		if (!queue.includes(tag)) {
+			msg = "User " + tag + " is not in the Queue.";
+			if (queue.length < 1) {
+				msg = msg + " The queue is empty.";
+			}
+			else {
+				msg = msg + "\n" + "Queue:" + "\n" + queue.join('\n');
+			}
+		}
+
+		else {
+			var old_index = queue.indexOf(tag);
+			if ( command === '-up' || command === 'ue-up' ) {
+				var new_index = queue.indexOf(tag)-1;
+				var direction = "up";
+			}
+			else {
+				var new_index = queue.indexOf(tag)+1;
+				var direction = "down";
+			}
+
+			if (new_index < 0 || new_index > queue.length - 1) {
+				msg = "User " + tag + " cannot be moved " + direction;
+				msg = msg + "\n" + "Queue:" + "\n" + queue.join('\n');
+			}
+			else {
+				move(queue, old_index, new_index);
+				msg = "User " + tag + " has been moved " + direction;
+				msg = msg + "\n" + "Queue:" + "\n" + queue.join('\n');
+			}
+
+		}
+	
+	}
+
+	
 	else {
 		msg = "Can't recognize command. Please use !que-help for list of commands";
 	}
@@ -112,6 +156,22 @@ function removeA(arr) {
     return arr;
 }
 
+function move(arr, old_index, new_index) {
+    while (old_index < 0) {
+        old_index += arr.length;
+    }
+    while (new_index < 0) {
+        new_index += arr.length;
+    }
+    if (new_index >= arr.length) {
+        var k = new_index - arr.length;
+        while ((k--) + 1) {
+            arr.push(undefined);
+        }
+    }
+     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);  
+   return arr;
+}
 // THIS  MUST  BE  THIS  WAY
 
 client.login(process.env.BOT_TOKEN);//BOT_TOKEN is the Client Secret
