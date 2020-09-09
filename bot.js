@@ -89,6 +89,8 @@ function queueRouter(command, args, pinger, message) {
 		msg = msg + "!que-join or !que-join @user to add a user to the queue"+"\n";
 		msg = msg + "!que-out or !que-out @user to remove a user from the queue"+"\n";
 		msg = msg + "!que-reset to remove all users from the queue"+"\n";
+		msg = msg + "!que-up or !que-up @user to bump a user up one spot in the queue"+"\n";
+		msg = msg + "!que-down or !que-down @user to move a user down one spot in the queue"+"\n";
 		msg = msg + "!que-show to show current queue"+"\n";
 		msg = msg + "!que-help to show commands";
 	}
